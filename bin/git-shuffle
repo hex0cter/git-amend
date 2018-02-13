@@ -1,6 +1,7 @@
+#!/usr/bin/env ruby
+
 require 'timerizer'
 require 'time'
-
 require 'optparse'
 
 options = {}
@@ -51,5 +52,4 @@ days_offset.each do |offset|
 FOO
   puts command
   system(command)
-
 end

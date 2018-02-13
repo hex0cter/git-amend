@@ -1,13 +1,19 @@
+PATH
+  remote: .
+  specs:
+    git-shuffle (0.0.1)
+      timerizer
+
 GEM
   remote: https://rubygems.org/
   specs:
-    timerizer (0.1.4)
+    timerizer (0.3.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  timerizer
+  git-shuffle!
 
 BUNDLED WITH
-   1.11.2
+   2.0.2
