@@ -38,6 +38,7 @@ end
 days_offset.sort!
 
 i = 0
+
 days_offset.each do |offset|
   i += 1
 
@@ -45,10 +46,11 @@ days_offset.each do |offset|
 
   # Sat, 14 Dec 2015 12:40:00 +0000
   date = offset.days.ago
+  puts "Set commit #{commit} to #{offset} days ago: #{date}"
 
-  random_time = Time.new(date.year, date.month, date.day, (8..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00")
+  new_time = Time.new(date.year, date.month, date.day, (8..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00")
   command = <<-FOO
-  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit}\' ; then export GIT_AUTHOR_DATE='#{random_time.to_s}'; export GIT_COMMITTER_DATE='#{random_time.to_s}'; fi && rm -fr '.git/refs/original/'"
+  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit}\' ; then export GIT_AUTHOR_DATE='#{new_time.to_s}'; export GIT_COMMITTER_DATE='#{new_time.to_s}'; fi && rm -fr '.git/refs/original/'"
 FOO
   puts command
   system(command)
