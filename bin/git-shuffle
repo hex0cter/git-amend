@@ -16,19 +16,15 @@ end.parse!
 
 
 if options[:path] == nil
-  print 'Enter the path of target repository: '
-  options[:path] = gets.chomp
+  puts 'Using current directory...'
+  options[:path] = Dir.pwd
 end
 
-p options
-#p ARGV
-
-path = options[:path]
-Dir.chdir path
+Dir.chdir options[:path]
 
 count = %x(git log --pretty=format:"%H" | wc -w)
 count = count.to_i
-puts "there are #{count} commits in total"
+# puts "there are #{count} commits in total"
 
 days_offset = []
 (1..365).to_a.sample(count).each do |num|
@@ -46,12 +42,12 @@ days_offset.each do |offset|
 
   # Sat, 14 Dec 2015 12:40:00 +0000
   date = offset.days.ago
-  puts "Set commit #{commit} to #{offset} days ago: #{date}"
+  puts "[#{i}/#{count}] Set commit #{commit} to #{offset} days ago: #{date}"
 
   new_time = Time.new(date.year, date.month, date.day, (8..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00")
   command = <<-FOO
   git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit}\' ; then export GIT_AUTHOR_DATE='#{new_time.to_s}'; export GIT_COMMITTER_DATE='#{new_time.to_s}'; fi && rm -fr '.git/refs/original/'"
 FOO
-  puts command
+  # puts command
   system(command)
 end

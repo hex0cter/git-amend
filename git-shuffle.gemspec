@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors      = ['Daniel Han']
   s.email        = 'hex0cter@gmail.com'
   s.required_ruby_version = '>= 2.2'
-  s.add_runtime_dependency 'timerizer'
+  s.add_runtime_dependency 'timerizer', '~> 0'
 
   s.files        = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md"]
   s.require_path = 'lib'
