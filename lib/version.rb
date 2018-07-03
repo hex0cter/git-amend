@@ -1,5 +1,5 @@
 
 module GitShuffle
-  VERSION = '0.0.2'
-  DATE = '2019-09-07'
+  VERSION = '0.0.3'
+  DATE = '2019-09-12'
 end

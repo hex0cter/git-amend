@@ -6,14 +6,12 @@ require 'optparse'
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: ruby date-shuffle.rb [options]"
+  opts.banner = "Usage: date-shuffle [options]"
 
   opts.on("-p path", "--path=path", "Path to the target respository") do |path|
-    puts path
     options[:path] = path
   end
 end.parse!
-
 
 if options[:path] == nil
   puts 'Using current directory...'
@@ -22,32 +20,33 @@ end
 
 Dir.chdir options[:path]
 
-count = %x(git log --pretty=format:"%H" | wc -w)
-count = count.to_i
-# puts "there are #{count} commits in total"
+spread_factor = 4 # 1 commit every 4 days in average
+
+no_of_all_commits = %x(git log --pretty=format:"%H" | wc -w)
+no_of_all_commits = no_of_all_commits.to_i
+development_days_for_repo = no_of_all_commits * spread_factor
+puts "Spreading #{no_of_all_commits} commits into #{development_days_for_repo} days."
 
 days_offset = []
-(1..365).to_a.sample(count).each do |num|
+(1..development_days_for_repo).to_a.sample(no_of_all_commits).each do |num|
   days_offset << num
 end
 
 days_offset.sort!
 
-i = 0
+index = 0
 
 days_offset.each do |offset|
-  i += 1
+  index += 1
 
-  commit = %x(git log -#{i} --pretty=format:"%H" | tail -1)
+  commit_hash = %x(git log -#{index} --pretty=format:"%H" | tail -1)
 
-  # Sat, 14 Dec 2015 12:40:00 +0000
   date = offset.days.ago
-  puts "[#{i}/#{count}] Set commit #{commit} to #{offset} days ago: #{date}"
+  new_time = Time.new(date.year, date.month, date.day, (18..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00").to_s
+  puts "[#{index}/#{no_of_all_commits}] Set commit #{commit_hash} to #{offset} days ago: #{new_time}"
 
-  new_time = Time.new(date.year, date.month, date.day, (8..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00")
   command = <<-FOO
-  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit}\' ; then export GIT_AUTHOR_DATE='#{new_time.to_s}'; export GIT_COMMITTER_DATE='#{new_time.to_s}'; fi && rm -fr '.git/refs/original/'"
+  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit_hash}\' ; then export GIT_AUTHOR_DATE='#{new_time}'; export GIT_COMMITTER_DATE='#{new_time}'; fi && rm -fr '.git/refs/original/'"
 FOO
-  # puts command
   system(command)
 end
