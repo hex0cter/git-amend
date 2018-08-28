@@ -16,6 +16,6 @@ git-shuffle
 ```bash
 gem build git-shuffle.gemspec
 gem install --local git-shuffle-<version>.gem
-cd <destination>
+cd <repository>
 git-shuffle
 ```

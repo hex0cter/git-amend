@@ -8,6 +8,8 @@ Gem::Specification.new do |s|
   s.description  = 'A CLI tool to shuffle the commit date of your git repository'
   s.authors      = ['Daniel Han']
   s.email        = 'hex0cter@gmail.com'
+  s.homepage     = 'https://github.com/hex0cter/git-shuffle'
+  s.metadata     = { "source_code_uri" => "https://github.com/hex0cter/git-shuffle" }
   s.required_ruby_version = '>= 2.2'
   s.add_runtime_dependency 'timerizer', '~> 0'
 
