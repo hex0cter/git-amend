@@ -6,25 +6,34 @@ require 'optparse'
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: date-shuffle [options]"
+  opts.banner = "Usage: git-shuffle [options]"
 
   opts.on("-p path", "--path=path", "Path to the target respository") do |path|
     options[:path] = path
   end
+  opts.on("-i interval", "--interval=interval", "How frequent is repo updated in days") do |interval|
+    options[:interval] = interval.to_i
+  end
+  opts.on("-a author", "--author=author", "Author of all commits") do |author|
+    options[:author] = author
+    puts "Setting author email to #{author}..."
+  end
+  opts.on("-c committer", "--committer=committer", "Committer of all commits") do |committer|
+    options[:committer] = committer
+    puts "Setting committer email to #{committer}..."
+  end
 end.parse!
 
-if options[:path] == nil
-  puts 'Using current directory...'
-  options[:path] = Dir.pwd
-end
+
+options[:path] = Dir.pwd if options[:path] == nil
+options[:interval] = 7 if options[:interval] == nil
 
 Dir.chdir options[:path]
-
-spread_factor = 4 # 1 commit every 4 days in average
+puts "Working directory: #{options[:path]}, #{options[:interval]} days per commit on average..."
 
 no_of_all_commits = %x(git log --pretty=format:"%H" | wc -w)
 no_of_all_commits = no_of_all_commits.to_i
-development_days_for_repo = no_of_all_commits * spread_factor
+development_days_for_repo = no_of_all_commits * options[:interval]
 puts "Spreading #{no_of_all_commits} commits into #{development_days_for_repo} days."
 
 days_offset = []
@@ -45,8 +54,17 @@ days_offset.each do |offset|
   new_time = Time.new(date.year, date.month, date.day, (18..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00").to_s
   puts "[#{index}/#{no_of_all_commits}] Set commit #{commit_hash} to #{offset} days ago: #{new_time}"
 
+  extra_cmd = ''
+  if options[:author]
+    extra_cmd += "export GIT_AUTHOR_EMAIL=#{options[:author]}; "
+  end
+  if options[:committer]
+    extra_cmd += "export GIT_COMMITTER_EMAIL=#{options[:committer]}; "
+  end
+
   command = <<-FOO
-  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit_hash}\' ; then export GIT_AUTHOR_DATE='#{new_time}'; export GIT_COMMITTER_DATE='#{new_time}'; fi && rm -fr '.git/refs/original/'"
+  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit_hash}\' ; then export GIT_AUTHOR_DATE='#{new_time}'; export GIT_COMMITTER_DATE='#{new_time}'; #{extra_cmd} fi && rm -fr '.git/refs/original/'"
 FOO
+  puts command
   system(command)
 end
