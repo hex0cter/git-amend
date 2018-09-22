@@ -14,11 +14,11 @@ OptionParser.new do |opts|
   opts.on("-i interval", "--interval=interval", "How frequent is repo updated in days") do |interval|
     options[:interval] = interval.to_i
   end
-  opts.on("-a author", "--author=author", "Author of all commits") do |author|
+  opts.on("-a author", "--author=author", "Author email of all commits") do |author|
     options[:author] = author
     puts "Setting author email to #{author}..."
   end
-  opts.on("-c committer", "--committer=committer", "Committer of all commits") do |committer|
+  opts.on("-c committer", "--committer=committer", "Committer email of all commits") do |committer|
     options[:committer] = committer
     puts "Setting committer email to #{committer}..."
   end

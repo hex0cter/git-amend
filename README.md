@@ -8,8 +8,15 @@ gem install git-shuffle
 
 ## How to use
 ```bash
-cd <repository>
-git-shuffle
+$ git-shuffle -h
+Usage: git-shuffle [options]
+    -p, --path=path                  Path to the target respository
+    -i, --interval=interval          How frequent is repo updated in days
+    -a, --author=author              Author email of all commits
+    -c, --committer=committer        Committer email of all commits
+
+$ cd <repository>
+$ git-shuffle
 ```
 
 ## How to test locally
