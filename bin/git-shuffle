@@ -56,10 +56,10 @@ days_offset.each do |offset|
 
   extra_cmd = ''
   if options[:author]
-    extra_cmd += "export GIT_AUTHOR_EMAIL=#{options[:author]}; "
+    extra_cmd += "export GIT_AUTHOR_EMAIL=\"#{options[:author]}\"; "
   end
   if options[:committer]
-    extra_cmd += "export GIT_COMMITTER_EMAIL=#{options[:committer]}; "
+    extra_cmd += "export GIT_COMMITTER_EMAIL=\"#{options[:committer]}\"; "
   end
 
   command = <<-FOO
