@@ -8,19 +8,27 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: git-shuffle [options]"
 
-  opts.on("-p path", "--path=path", "Path to the target respository") do |path|
+  opts.on("-p <path>", "--path=<path>", "Path to the target respository") do |path|
     options[:path] = path
   end
-  opts.on("-i interval", "--interval=interval", "How frequent is repo updated in days") do |interval|
+  opts.on("-i <interval>", "--interval=<interval>", "How frequent is repo updated in days (default: 7)") do |interval|
     options[:interval] = interval.to_i
   end
-  opts.on("-a author", "--author=author", "Author email of all commits") do |author|
-    options[:author] = author
-    puts "Setting author email to #{author}..."
+  opts.on("-a <email>", "--author=<email>", "Author email for all commits") do |author_email|
+    options[:author_email] = author_email
+    puts "Setting author email to #{author_email}..."
   end
-  opts.on("-c committer", "--committer=committer", "Committer email of all commits") do |committer|
-    options[:committer] = committer
-    puts "Setting committer email to #{committer}..."
+  opts.on("-n <name>", "--author-name=<name>", "Author name for all commits") do |author_name|
+    options[:author_name] = author_name
+    puts "Setting author name to #{author_name}..."
+  end
+  opts.on("-c <email>", "--committer=<email>", "Committer email for all commits") do |committer_email|
+    options[:committer_email] = committer_email
+    puts "Setting committer email to #{committer_email}..."
+  end
+  opts.on("-m <name>", "--committer-name=<name>", "Committer name for all commits") do |committer_name|
+    options[:committer_name] = committer_name
+    puts "Setting committer name to #{committer_name}..."
   end
 end.parse!
 
@@ -55,15 +63,25 @@ days_offset.each do |offset|
   puts "[#{index}/#{no_of_all_commits}] Set commit #{commit_hash} to #{offset} days ago: #{new_time}"
 
   extra_cmd = ''
-  if options[:author]
-    extra_cmd += "export GIT_AUTHOR_EMAIL=\"#{options[:author]}\"; "
+  if options[:interval]
+    extra_cmd += "export GIT_AUTHOR_DATE='#{new_time}'; "
+    extra_cmd += "export GIT_COMMITTER_DATE='#{new_time}'; "
   end
-  if options[:committer]
-    extra_cmd += "export GIT_COMMITTER_EMAIL=\"#{options[:committer]}\"; "
+  if options[:author_email]
+    extra_cmd += "export GIT_AUTHOR_EMAIL='#{options[:author_email]}'; "
+  end
+  if options[:author_name]
+    extra_cmd += "export GIT_AUTHOR_NAME='#{options[:author_name]}'; "
+  end
+  if options[:committer_email]
+    extra_cmd += "export GIT_COMMITTER_EMAIL='#{options[:committer_email]}'; "
+  end
+  if options[:committer_name]
+    extra_cmd += "export GIT_COMMITTER_NAME='#{options[:committer_name]}'; "
   end
 
   command = <<-FOO
-  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = \'#{commit_hash}\' ; then export GIT_AUTHOR_DATE='#{new_time}'; export GIT_COMMITTER_DATE='#{new_time}'; #{extra_cmd} fi && rm -fr '.git/refs/original/'"
+  git filter-branch -f --env-filter "if test \\$GIT_COMMIT = '#{commit_hash}' ; then #{extra_cmd} fi && rm -fr '.git/refs/original/'"
 FOO
   puts command
   system(command)
