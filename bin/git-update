@@ -6,7 +6,7 @@ require 'optparse'
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: git-shuffle [options]"
+  opts.banner = "Usage: git-update [options]"
 
   opts.on("-p <path>", "--path=<path>", "Path to the target respository") do |path|
     options[:path] = path

@@ -1,23 +1,23 @@
-# git-shuffle
-Shuffle your git commits date and spread them throughout the year.
+# git-update
+A CLI tool to update the information of exisiting git commit, such as commit date, auther, etc.
 
 ## How to install
 ```bash
-gem install git-shuffle
+gem install git-update
 ```
 
 ## How to install
 ```bash
-gem build git-shuffle.gemspec
-gem install --local git-shuffle-<version>.gem
+gem build git-update.gemspec
+gem install --local git-update-<version>.gem
 cd <repository>
-git-shuffle
+git-update
 ```
 
 ## How to use
 ```bash
-$ git-shuffle -h
-Usage: git-shuffle [options]
+$ git-update -h
+Usage: git-update [options]
     -p, --path=<path>                Path to the target respository
     -i, --interval=<interval>        How frequent is repo updated in days
     -a, --author=<email>             Author email for all commits
@@ -26,5 +26,5 @@ Usage: git-shuffle [options]
     -m, --committer-name=<name>      Committer name for all commits
 
 $ cd <repository>
-$ git-shuffle
+$ git-update
 ```
