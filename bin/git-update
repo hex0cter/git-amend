@@ -5,14 +5,12 @@ require 'time'
 require 'optparse'
 
 options = {}
+
 OptionParser.new do |opts|
   opts.banner = "Usage: git-update [options]"
 
   opts.on("-p <path>", "--path=<path>", "Path to the target respository") do |path|
     options[:path] = path
-  end
-  opts.on("-i <interval>", "--interval=<interval>", "How frequent is repo updated in days (default: 7)") do |interval|
-    options[:interval] = interval.to_i
   end
   opts.on("-a <email>", "--author=<email>", "Author email for all commits") do |author_email|
     options[:author_email] = author_email
@@ -30,12 +28,38 @@ OptionParser.new do |opts|
     options[:committer_name] = committer_name
     puts "Setting committer name to #{committer_name}..."
   end
+  opts.on("-s", "--shuffle", "Whether to shuffle the commit date (default: no)") do |should_shuffle|
+    options[:should_shuffle_date] = true
+  end
+  opts.on("-i <interval>", "--interval=<interval>", "How frequent is repo updated in days (default: 7)") do |interval|
+    options[:interval] = interval.to_i
+  end
+  opts.on("-f <date>", "--from=<date>", "Date of the first commit") do |from|
+    options[:from] = from
+  end
+  opts.on("-t <date>", "--to=<date>", "Date of the latest commit") do |to|
+    options[:to] = to
+  end
 end.parse!
 
 
 options[:path] = Dir.pwd if options[:path] == nil
 options[:interval] = 7 if options[:interval] == nil
+options[:should_shuffle_date] = false if options[:should_shuffle_date] == nil
 
+all_commits = %x(git log --format=format:%H)
+all_commits = all_commits.split('\n')
+num_of_commits = all_commits.length
+if options[:should_shuffle_date] then
+  puts 'yes'
+end
+
+
+all_commits.each do |commit|
+  puts commit
+end
+
+return
 Dir.chdir options[:path]
 puts "Working directory: #{options[:path]}, #{options[:interval]} days per commit on average..."
 
