@@ -1,10 +1,21 @@
 #!/usr/bin/env ruby
-
 require 'timerizer'
 require 'time'
 require 'optparse'
 
-options = {}
+# Default values
+options = {
+  path: Dir.pwd,
+  author_email: nil,
+  author_name: nil,
+  committer_email: nil,
+  committer_name: nil,
+  should_shuffle_date: false,
+  from: 365.days.ago,
+  to: 0.days.ago,
+  dry_run: false,
+  verbose: false
+}
 
 OptionParser.new do |opts|
   opts.banner = "Usage: git-update [options]"
@@ -31,66 +42,32 @@ OptionParser.new do |opts|
   opts.on("-s", "--shuffle", "Whether to shuffle the commit date (default: no)") do |should_shuffle|
     options[:should_shuffle_date] = true
   end
-  opts.on("-i <interval>", "--interval=<interval>", "How frequent is repo updated in days (default: 7)") do |interval|
-    options[:interval] = interval.to_i
-  end
   opts.on("-f <date>", "--from=<date>", "Date of the first commit") do |from|
-    options[:from] = from
+    options[:from] = DateTime.strptime(from, '%Y-%m-%d').to_time # TODO: format data
   end
   opts.on("-t <date>", "--to=<date>", "Date of the latest commit") do |to|
-    options[:to] = to
+    options[:to] = DateTime.strptime(to, '%Y-%m-%d').to_time # TODO: format data
+  end
+  opts.on("-v", "--verbose", "Verbose mode") do
+    options[:verbose] = true
+  end
+  opts.on("-d", "--dry-run", "Dry run with executing the command.") do
+    options[:dry_run] = true
   end
 end.parse!
 
-
-options[:path] = Dir.pwd if options[:path] == nil
-options[:interval] = 7 if options[:interval] == nil
-options[:should_shuffle_date] = false if options[:should_shuffle_date] == nil
-
 all_commits = %x(git log --format=format:%H)
-all_commits = all_commits.split('\n')
-num_of_commits = all_commits.length
-if options[:should_shuffle_date] then
-  puts 'yes'
-end
+all_commits = all_commits.split(' ').reverse
+no_of_all_commits = all_commits.size
 
+development_days_for_repo = (options[:to] - options[:from])/(3600 * 24)
+days_offset = (1..development_days_for_repo).to_a.sample(no_of_all_commits).sort
 
-all_commits.each do |commit|
-  puts commit
-end
-
-return
 Dir.chdir options[:path]
-puts "Working directory: #{options[:path]}, #{options[:interval]} days per commit on average..."
-
-no_of_all_commits = %x(git log --pretty=format:"%H" | wc -w)
-no_of_all_commits = no_of_all_commits.to_i
-development_days_for_repo = no_of_all_commits * options[:interval]
-puts "Spreading #{no_of_all_commits} commits into #{development_days_for_repo} days."
-
-days_offset = []
-(1..development_days_for_repo).to_a.sample(no_of_all_commits).each do |num|
-  days_offset << num
-end
-
-days_offset.sort!
-
-index = 0
-
-days_offset.each do |offset|
-  index += 1
-
-  commit_hash = %x(git log -#{index} --pretty=format:"%H" | tail -1)
-
-  date = offset.days.ago
-  new_time = Time.new(date.year, date.month, date.day, (18..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00").to_s
-  puts "[#{index}/#{no_of_all_commits}] Set commit #{commit_hash} to #{offset} days ago: #{new_time}"
+all_commits.each_index do |index|
+  commit_hash = all_commits[index]
 
   extra_cmd = ''
-  if options[:interval]
-    extra_cmd += "export GIT_AUTHOR_DATE='#{new_time}'; "
-    extra_cmd += "export GIT_COMMITTER_DATE='#{new_time}'; "
-  end
   if options[:author_email]
     extra_cmd += "export GIT_AUTHOR_EMAIL='#{options[:author_email]}'; "
   end
@@ -104,9 +81,25 @@ days_offset.each do |offset|
     extra_cmd += "export GIT_COMMITTER_NAME='#{options[:committer_name]}'; "
   end
 
+  if options[:should_shuffle_date] then
+    offset = days_offset[index]
+    date = options[:from] + offset * (24 * 3600)
+    new_time = Time.new(date.year, date.month, date.day, (18..23).to_a.sample, (0..59).to_a.sample, (0..59).to_a.sample, "+02:00").to_s
+
+    extra_cmd += "export GIT_AUTHOR_DATE='#{new_time}'; "
+    extra_cmd += "export GIT_COMMITTER_DATE='#{new_time}'; "
+  end
+
   command = <<-FOO
   git filter-branch -f --env-filter "if test \\$GIT_COMMIT = '#{commit_hash}' ; then #{extra_cmd} fi && rm -fr '.git/refs/original/'"
 FOO
-  puts command
-  system(command)
+
+  if options[:verbose] then
+    puts command
+  end
+
+  puts "[#{index+1}/#{no_of_all_commits}] Updating commit #{commit_hash} ..."
+  unless options[:dry_run] then
+    # system(command)
+  end
 end
