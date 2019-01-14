@@ -100,6 +100,6 @@ FOO
 
   puts "[#{index+1}/#{no_of_all_commits}] Updating commit #{commit_hash} ..."
   unless options[:dry_run] then
-    # system(command)
+    system("FILTER_BRANCH_SQUELCH_WARNING=1 #{command}")
   end
 end
