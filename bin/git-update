@@ -57,11 +57,11 @@ OptionParser.new do |opts|
 end.parse!
 
 all_commits = %x(git log --format=format:%H)
-all_commits = all_commits.split(' ').reverse
+all_commits = all_commits.split(' ')
 no_of_all_commits = all_commits.size
 
 development_days_for_repo = (options[:to] - options[:from])/(3600 * 24)
-days_offset = (1..development_days_for_repo).to_a.sample(no_of_all_commits).sort
+days_offset = (1..development_days_for_repo).to_a.sample(no_of_all_commits).sort.reverse
 
 Dir.chdir options[:path]
 all_commits.each_index do |index|
