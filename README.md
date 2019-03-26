@@ -1,23 +1,23 @@
-# git-update
+# git-amend
 A CLI tool to update the information of exisiting git commit, such as commit date, auther, etc.
 
 ## How to install
 ```bash
-gem install git-update
+gem install git-amend
 ```
 
 ## How to install
 ```bash
-gem build git-update.gemspec
-gem install --local git-update-<version>.gem
+gem build git-amend.gemspec
+gem install --local git-amend-<version>.gem
 cd <repository>
-git-update
+git-amend
 ```
 
 ## How to use
 ```bash
-$ git-update -h
-Usage: git-update [options]
+$ git-amend -h
+Usage: git-amend [options]
     -p, --path=<path>                Path to the target respository
     -i, --interval=<interval>        How frequent is repo updated in days
     -a, --author=<email>             Author email for all commits
@@ -26,5 +26,5 @@ Usage: git-update [options]
     -m, --committer-name=<name>      Committer name for all commits
 
 $ cd <repository>
-$ git-update
+$ git-amend
 ```
