@@ -16,15 +16,15 @@ git-amend
 
 ## How to use
 ```bash
-$ git-amend -h
 Usage: git-amend [options]
     -p, --path=<path>                Path to the target respository
-    -i, --interval=<interval>        How frequent is repo updated in days
     -a, --author=<email>             Author email for all commits
     -n, --author-name=<name>         Author name for all commits
     -c, --committer=<email>          Committer email for all commits
     -m, --committer-name=<name>      Committer name for all commits
-
-$ cd <repository>
-$ git-amend
+    -s, --shuffle                    Whether to shuffle the commit date (default: no)
+    -f, --from=<date>                Date of the first commit
+    -t, --to=<date>                  Date of the latest commit
+    -v, --verbose                    Verbose mode
+    -d, --dry-run                    Dry run without executing the actual command.
 ```

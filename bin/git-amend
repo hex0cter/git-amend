@@ -51,7 +51,7 @@ OptionParser.new do |opts|
   opts.on("-v", "--verbose", "Verbose mode") do
     options[:verbose] = true
   end
-  opts.on("-d", "--dry-run", "Dry run with executing the command.") do
+  opts.on("-d", "--dry-run", "Dry run without executing the actual command.") do
     options[:dry_run] = true
   end
 end.parse!
