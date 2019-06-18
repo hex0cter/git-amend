@@ -2,6 +2,7 @@
 require 'timerizer'
 require 'time'
 require 'optparse'
+require_relative '../lib/version'
 
 # Default values
 options = {
@@ -14,7 +15,9 @@ options = {
   from: 365.days.ago,
   to: 0.days.ago,
   dry_run: false,
-  verbose: false
+  verbose: false,
+  version: false,
+  commit_hash: nil
 }
 
 OptionParser.new do |opts|
@@ -39,6 +42,9 @@ OptionParser.new do |opts|
     options[:committer_name] = committer_name
     puts "Setting committer name to #{committer_name}..."
   end
+  opts.on("-C <hash>", "--commit-hash=<hash>", "The hash of git commit that needs to be updated") do |commit_hash|
+    options[:commit_hash] = commit_hash
+  end
   opts.on("-s", "--shuffle", "Whether to shuffle the commit date (default: no)") do |should_shuffle|
     options[:should_shuffle_date] = true
   end
@@ -51,10 +57,18 @@ OptionParser.new do |opts|
   opts.on("-v", "--verbose", "Verbose mode") do
     options[:verbose] = true
   end
+  opts.on("-V", "--version", "Print version") do
+    options[:version] = true
+  end
   opts.on("-d", "--dry-run", "Dry run without executing the actual command.") do
     options[:dry_run] = true
   end
 end.parse!
+
+if options[:version] then
+  puts "git-amend v#{GitAmend::VERSION}"
+  exit 0
+end
 
 all_commits = %x(git log --format=format:%H)
 all_commits = all_commits.split(' ')
@@ -66,6 +80,11 @@ days_offset = (1..development_days_for_repo).to_a.sample(no_of_all_commits).sort
 Dir.chdir options[:path]
 all_commits.each_index do |index|
   commit_hash = all_commits[index]
+
+  if options[:commit_hash] and commit_hash != options[:commit_hash] then
+    puts "[#{index+1}/#{no_of_all_commits}] Skipping commit #{commit_hash} ..."
+    next
+  end
 
   extra_cmd = ''
   if options[:author_email]
