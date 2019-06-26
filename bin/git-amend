@@ -75,14 +75,15 @@ all_commits = all_commits.split(' ')
 no_of_all_commits = all_commits.size
 
 development_days_for_repo = (options[:to] - options[:from])/(3600 * 24)
-days_offset = (1..development_days_for_repo).to_a.sample(no_of_all_commits).sort.reverse
+days_offset = (0..development_days_for_repo).to_a.sample(no_of_all_commits).sort.reverse
+no_of_commits_to_update = days_offset.size
 
 Dir.chdir options[:path]
-all_commits.each_index do |index|
+days_offset.each_index do |index|
   commit_hash = all_commits[index]
 
   if options[:commit_hash] and commit_hash != options[:commit_hash] then
-    puts "[#{index+1}/#{no_of_all_commits}] Skipping commit #{commit_hash} ..."
+    puts "[#{index+1}/#{no_of_commits_to_update}] Skipping commit #{commit_hash} ..."
     next
   end
 
@@ -117,7 +118,7 @@ FOO
     puts command
   end
 
-  puts "[#{index+1}/#{no_of_all_commits}] Updating commit #{commit_hash} ..."
+  puts "[#{index+1}/#{no_of_commits_to_update}] Updating commit #{commit_hash} ..."
   unless options[:dry_run] then
     system("FILTER_BRANCH_SQUELCH_WARNING=1 #{command}")
   end
