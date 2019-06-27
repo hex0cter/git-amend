@@ -22,9 +22,11 @@ Usage: git-amend [options]
     -n, --author-name=<name>         Author name for all commits
     -c, --committer=<email>          Committer email for all commits
     -m, --committer-name=<name>      Committer name for all commits
+    -C, --commit-hash=<hash>         The hash of git commit that needs to be updated
     -s, --shuffle                    Whether to shuffle the commit date (default: no)
     -f, --from=<date>                Date of the first commit
     -t, --to=<date>                  Date of the latest commit
     -v, --verbose                    Verbose mode
+    -V, --version                    Print version
     -d, --dry-run                    Dry run without executing the actual command.
 ```
