@@ -1,4 +1,7 @@
 # git-amend
+[![Build Status](https://travis-ci.org/hex0cter/git-amend.svg?branch=master)](https://travis-ci.org/hex0cter/git-amend)
+[![Gem Version](https://badge.fury.io/rb/git-amend.svg)](https://badge.fury.io/rb/git-amend)
+
 A CLI tool to update the information of exisiting git commit, such as commit date, auther, etc.
 
 ## How to install
