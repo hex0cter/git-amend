@@ -27,8 +27,8 @@ Usage: git-amend [options]
     -m, --committer-name=<name>      Committer name for all commits
     -C, --commit-hash=<hash>         The hash of git commit that needs to be updated
     -s, --shuffle                    Whether to shuffle the commit date (default: no)
-    -f, --from=<date>                Date of the first commit
-    -t, --to=<date>                  Date of the latest commit
+    -f, --from=<date>                Date of the first commit (YYYY-mm-dd), only used with --shuffle
+    -t, --to=<date>                  Date of the latest commit (YYYY-mm-dd), only used with --shuffle
     -v, --verbose                    Verbose mode
     -V, --version                    Print version
     -d, --dry-run                    Dry run without executing the actual command.
